@@ -1,9 +1,8 @@
+import math
 from openpyxl import load_workbook                 
 from scipy.stats import rv_discrete
 import numpy as np
 import matplotlib.pyplot as plt
-import math
-
 
 # opening .xlsx file
 wb = load_workbook('mini-project1-data.xlsx')                                                                            
@@ -15,6 +14,7 @@ questionDistributions = {}
 questionMeanVarEnt = {}
 questionTitles = []
 
+
 '''
 Parses the accompanying .xlsx file extracting each response. The responses 
     are then separated by type (1 - 5). The rates and total responses are 
@@ -24,7 +24,7 @@ Parameters:
     columnLabel - the name of the column being parsed
 '''
 def dataByColumn(columnLabel):
-    questionResponses = [0 for i in range(5)]
+    questionResponses = []
     responses = []
 
     # parse .xlsx file and add to list
@@ -36,16 +36,18 @@ def dataByColumn(columnLabel):
 
     # populate list with rates per response
     for i in range(5):
-        questionResponses[i] = responses.count(i + 1)
+        questionResponses.append(responses.count(i + 1))
     
     return questionResponses, len(responses)
+
 
 '''
 
 '''
 def distributionOfQuestions(numResponse, total):
-    prob = np.divide(numResponse,total)
+    prob = np.divide(numResponse, total)
     return prob
+
 
 '''
 Takes the question titles and distributions as parameters.
@@ -57,7 +59,7 @@ def createBarGraph(titles, distributions):
     colors = ['g', 'b', 'r', 'y', 'k']
 
     # bar graph setup
-    plt.figure(figsize=(18,3))
+    plt.figure(figsize=(18, 3))
     index = np.arange(nGroups)
     barWidth = 0.15
     opacity = 0.8
@@ -66,15 +68,17 @@ def createBarGraph(titles, distributions):
     for rating in range(5):
         q = []
         counter = barWidth * (rating + 1)
-        for key in distributions:
-            q.append(distributions.get(key)[rating])
-        plt.bar(index + counter, tuple(q), barWidth, alpha=opacity, color=colors[rating], label=(rating + 1))   
+        for keys in distributions:
+            q.append(distributions.get(keys)[rating])
+        plt.bar(index + counter, tuple(q), barWidth, alpha=opacity, 
+                color=colors[rating], label=(rating + 1))   
 
     plt.xlabel('Questions')
     plt.ylabel('Distributions')
     plt.xticks(index + (barWidth * 3), tuple(titles))
     plt.legend()
     plt.show()
+
 
 '''
 Function computes and returns the mean, variance, and entropy 
@@ -93,9 +97,7 @@ def computeMeanVarEnt(rates, prob):
     ent = np.multiply(negProb, np.log2(prob))
     return rv.mean(), rv.var(), sum(ent)
 
-# TODO: loop through the questions
-# TODO: extract the prob lists, and do calculations
-# TODO: store in a dictionary {question numbers as string:Hellinger calculation}
+
 def calculateHellinger(questProbs, titles):
     hellinDict = {}
     divSqRtTwo = 1 / math.sqrt(2)
@@ -115,7 +117,7 @@ def createScatterPlot(hellinDict):
     for i in range(325):
         x_axis.append(i + 1)
 
-    colors = (0,0,0)
+    colors = (0, 0, 0)
     area = np.pi*3
  
     # Plot
@@ -136,7 +138,7 @@ for i in range(26):
     questionProb = distributionOfQuestions(responseRates, numOfResponses)
     questionMean, questionVar, questionEnt = computeMeanVarEnt(responseRates, questionProb)
  
-    questionMeanVarEnt.update({questionName:[questionMean,questionVar, questionEnt]})          
+    questionMeanVarEnt.update({questionName:[questionMean, questionVar, questionEnt]})          
     questionDistributions.update({questionName:questionProb})           
 
 hellDict = calculateHellinger(questionDistributions, questionTitles)
