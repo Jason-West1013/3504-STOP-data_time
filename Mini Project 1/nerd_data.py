@@ -1,6 +1,5 @@
 import math
-from openpyxl import load_workbook                 
-from scipy.stats import rv_discrete
+from openpyxl import load_workbook
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,16 +13,10 @@ questionDistributions = {}
 questionMeanVarEnt = {}
 questionTitles = []
 
-
-'''
-Parses the accompanying .xlsx file extracting each response. The responses 
-    are then separated by type (1 - 5). The rates and total responses are 
-    returned.
-
-Parameters:
-    columnLabel - the name of the column being parsed
-'''
-def dataByColumn(columnLabel):
+''' Parses each column using openpyxl, then computes the
+    and returns the response distribution of the specific 
+    question. '''
+def distributionOfColumn(columnLabel):
     questionResponses = []
     responses = []
 
@@ -31,29 +24,44 @@ def dataByColumn(columnLabel):
     for row in range(2, ws.max_row + 1):
         for column in columnLabel:
             cellName = "{}{}".format(column, row)
-            if ws[cellName].value != 0:
-                responses.append(ws[cellName].value)        # omit the 0s
+            if ws[cellName].value != 0:                             # omit the 0s from the data set
+                responses.append(ws[cellName].value)  
 
     # populate list with rates per response
     for i in range(5):
         questionResponses.append(responses.count(i + 1))
     
-    return questionResponses, len(responses)
+    return np.divide(questionResponses, len(responses))
+
+''' Computes and returns the mean, variance, and entropy 
+    for a specific question based on the response distributions. 
+    Makes use of numpy for the list arithmetic. '''
+def computeMeanVarEnt(response, probs):
+    negProb = [-i for i in probs]
+    expectation = sum(np.multiply(response, probs))
+    doubleExpectation = sum(np.multiply(np.square(response), probs))
+    variance = np.subtract(doubleExpectation, np.square(expectation))
+    entropy = sum(np.multiply(negProb, np.log2(probs)))
+    return expectation, variance, entropy
+
+''' Computes the Hellinger distance of each possible question pair. 
+    Returns a dictionary of the values with an accompanying key 
+    describing the two questions.'''
+def calculateHellinger(questProbs, titles):
+    hellinDict = {}
+    divSqRtTwo = 1 / math.sqrt(2)
+    for qA in range(26):
+        for qB in range(qA + 1, 26):
+            probA = questProbs.get(titles[qA])
+            probB = questProbs.get(titles[qB])
+            temp = np.sqrt(sum(np.square(np.subtract(np.sqrt(probA), np.sqrt(probB)))))
+            hellin = np.multiply(np.sqrt(temp), divSqRtTwo)
+
+            hellinKey = "%d, %d" % (qA + 1, qB + 1)
+            hellinDict.update({hellinKey:hellin})
+    return hellinDict
 
 
-'''
-
-'''
-def distributionOfQuestions(numResponse, total):
-    prob = np.divide(numResponse, total)
-    return prob
-
-
-'''
-Takes the question titles and distributions as parameters.
-The data is formatted and a bar graph is created. 
-Uses the matplotlib to draw the graph.
-'''
 def createBarGraph(titles, distributions):
     nGroups = len(titles)
     colors = ['g', 'b', 'r', 'y', 'k']
@@ -80,38 +88,6 @@ def createBarGraph(titles, distributions):
     plt.show()
 
 
-'''
-Function computes and returns the mean, variance, and entropy 
-    of a set of distributions. Makes use of the scipy.stats
-    library.
-
-Parameters: 
-    rates - a list of sums of all specific responses for a question
-    prob - a list of the probabilities of all responses for a question
-Returns: mean, variance, entropy
-'''
-def computeMeanVarEnt(rates, prob):
-    negProb = [-i for i in prob]
-    rv = rv_discrete(values=(rates, prob))
-
-    ent = np.multiply(negProb, np.log2(prob))
-    return rv.mean(), rv.var(), sum(ent)
-
-
-def calculateHellinger(questProbs, titles):
-    hellinDict = {}
-    divSqRtTwo = 1 / math.sqrt(2)
-    for qA in range(26):
-        for qB in range(qA + 1, 26):
-            probA = questProbs.get(titles[qA])
-            probB = questProbs.get(titles[qB])
-            temp = np.sqrt(sum(np.square(np.subtract(np.sqrt(probA), np.sqrt(probB)))))
-            hellin = np.multiply(np.sqrt(temp), divSqRtTwo)
-
-            hellinKey = "%d, %d" % (qA + 1, qB + 1)
-            hellinDict.update({hellinKey:hellin})
-    return hellinDict
-
 def createScatterPlot(hellinDict):
     x_axis = []
     for i in range(325):
@@ -129,27 +105,17 @@ def createScatterPlot(hellinDict):
 
 # Formats the data using the functions above and enters it into a dictionary for easy access. 
 # will also create a dictionary that holds all the question totals
+answer = list(range(1, 6))
+
 for i in range(26):
     colLetter = chr(65 + i)
     questionName = "Q%d" % (i + 1)
     questionTitles.append(questionName)
     
-    responseRates, numOfResponses = dataByColumn(colLetter) 
-    questionProb = distributionOfQuestions(responseRates, numOfResponses)
-    questionMean, questionVar, questionEnt = computeMeanVarEnt(responseRates, questionProb)
+    questionProb = distributionOfColumn(colLetter)
+    questionMean, questionVar, questionEnt = computeMeanVarEnt(answer, questionProb)
  
     questionMeanVarEnt.update({questionName:[questionMean, questionVar, questionEnt]})          
     questionDistributions.update({questionName:questionProb})           
 
 hellDict = calculateHellinger(questionDistributions, questionTitles)
-
-minHellinValue = min(hellDict.values())
-minHellinKey = [key for key in hellDict if hellDict[key] == minHellinValue]
-#print(minHellinKey)
-#print(minHellinValue)
-#print(hellDict)
-
-#print(questionMeanVarEnt)
-#createBarGraph(questionTitles, questionDistributions)
-#createScatterPlot(hellDict)
-createBarGraph(questionTitles, questionDistributions)
