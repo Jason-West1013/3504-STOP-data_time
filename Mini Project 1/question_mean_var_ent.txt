@@ -1,0 +1,104 @@
+Q1
+  mean: 3.838
+  variance: 1.342
+  entropy: 2.011
+Q2
+  mean: 3.959
+  variance: 1.572
+  entropy: 1.946
+Q3
+  mean: 4.111
+  variance: 1.159
+  entropy: 1.801
+Q4
+  mean: 3.663
+  variance: 1.602
+  entropy: 2.146
+Q5
+  mean: 3.853
+  variance: 1.405
+  entropy: 2.016
+Q6
+  mean: 3.703
+  variance: 1.367
+  entropy: 2.087
+Q7
+  mean: 4.152
+  variance: 1.216
+  entropy: 1.776
+Q8
+  mean: 3.695
+  variance: 1.914
+  entropy: 2.106
+Q9
+  mean: 3.945
+  variance: 1.22
+  entropy: 1.943
+Q10
+  mean: 4.103
+  variance: 1.119
+  entropy: 1.801
+Q11
+  mean: 3.018
+  variance: 2.496
+  entropy: 2.239
+Q12
+  mean: 3.815
+  variance: 1.494
+  entropy: 2.047
+Q13
+  mean: 3.641
+  variance: 1.692
+  entropy: 2.151
+Q14
+  mean: 3.67
+  variance: 1.397
+  entropy: 2.11
+Q15
+  mean: 2.844
+  variance: 2.248
+  entropy: 2.292
+Q16
+  mean: 3.371
+  variance: 2.012
+  entropy: 2.267
+Q17
+  mean: 3.819
+  variance: 1.37
+  entropy: 2.046
+Q18
+  mean: 3.912
+  variance: 1.814
+  entropy: 1.955
+Q19
+  mean: 3.311
+  variance: 2.519
+  entropy: 2.199
+Q20
+  mean: 3.622
+  variance: 1.362
+  entropy: 2.115
+Q21
+  mean: 2.853
+  variance: 2.629
+  entropy: 2.199
+Q22
+  mean: 2.389
+  variance: 1.851
+  entropy: 2.183
+Q23
+  mean: 3.836
+  variance: 1.904
+  entropy: 2.013
+Q24
+  mean: 4.243
+  variance: 0.939
+  entropy: 1.66
+Q25
+  mean: 3.174
+  variance: 1.959
+  entropy: 2.3
+Q26
+  mean: 4.11
+  variance: 1.179
+  entropy: 1.819
