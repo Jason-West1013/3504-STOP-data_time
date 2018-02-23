@@ -2,5 +2,6 @@
     "cSpell.words": [
         "hellin",
         "probs"
-    ]
+    ],
+    "python.pythonPath": "/anaconda2/envs/nerd_data/bin/python"
 }
