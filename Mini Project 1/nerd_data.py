@@ -52,9 +52,9 @@ def calculateHellinger(distributions, questionTitle):
     divSqRtTwo = 1 / math.sqrt(2)
     for qA in range(26):
         for qB in range(qA + 1, 26):
-            probabilityOfA = distributions.get(questionTitle[qA])
-            probabilityOfB = distributions.get(questionTitle[qB])
-            temp = np.sqrt(sum(np.square(np.subtract(np.sqrt(probabilityOfA), np.sqrt(probabilityOfB)))))
+            probOfA = distributions.get(questionTitle[qA])
+            probOfB = distributions.get(questionTitle[qB])
+            temp = np.sqrt(sum(np.square(np.subtract(np.sqrt(probOfA), np.sqrt(probOfB)))))
             hellin = np.multiply(np.sqrt(temp), divSqRtTwo)
 
             # format key and create dictionary
@@ -77,7 +77,8 @@ def distributionBarGraph(distributions, questionTitle):
     for rating in range(5):
         counter = barWidth * (rating + 1)
         probabilityOfResponse = tuple([probs[rating] for probs in distributions.values()])
-        plt.bar(index + counter, probabilityOfResponse, barWidth, color=colors[rating], label=(rating + 1))   
+        plt.bar(index + counter, probabilityOfResponse, barWidth, 
+                color=colors[rating], label=(rating + 1))   
 
     plt.xlabel('Questions')
     plt.ylabel('Distributions')
@@ -103,7 +104,7 @@ def hellingerBarGraph(distances):
 ''' Writes the dictionary data passed to a .txt file in a 
     readable format. '''
 def writeDataToFile(filename, data, dictValueNum):
-    type = ['mean', 'variance', 'entropy']
+    title = ['mean', 'variance', 'entropy']
     f = open(filename, "w")
     for key, value in data.items():
         if dictValueNum <= 1:
@@ -112,7 +113,7 @@ def writeDataToFile(filename, data, dictValueNum):
             f.write("%s\n" % key)
             for i in range(dictValueNum):
                 if dictValueNum == 3:
-                    f.write("  %s: %s\n" % (type[i], round(value[i], 3)))
+                    f.write("  %s: %s\n" % (title[i], round(value[i], 3)))
                 else:
                     f.write("  %d: %s\n" % (i+1, round(value[i], 3)))  
     f.close()
@@ -130,7 +131,7 @@ for i in range(26):
     questionMeanVarEnt.update({questionName:[questionMean, questionVar, questionEnt]})          
     questionDistributions.update({questionName:questionProb})           
 
-keys = [key for key in questionDistributions.keys()]
+keys = [key for key, values in questionDistributions.items()]
 distances = calculateHellinger(questionDistributions, keys)
 distanceMaxKey = max(distances, key=distances.get)
 distanceMinKey = min(distances, key=distances.get)
