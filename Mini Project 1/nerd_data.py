@@ -121,7 +121,8 @@ def writeDataToFile(filename, data, dictValueNum):
 # Main
 answer = list(range(1, 6))
 
-# loop that creates dictionaries to hold the contents of the distributions, mean, variance, and entropy
+# loop that creates dictionaries to hold the contents of 
+# the distributions, mean, variance, and entropy
 for i in range(26):
     colLetter = chr(65 + i)
     questionName = "Q%d" % (i + 1)
@@ -140,7 +141,8 @@ distances = calculateHellinger(questionDistributions, keys)
 distanceMaxKey = max(distances, key=distances.get)
 distanceMinKey = min(distances, key=distances.get)
 
-# writes all the data to file for easy reading, also creates the two graphs and prints the min and max hellinger pairs.
+# writes all the data to file for easy reading, also creates the 
+# two graphs and prints the min and max hellinger pairs.
 writeDataToFile("question_distributions.txt", questionDistributions, 5)
 writeDataToFile("question_mean_var_ent.txt", questionMeanVarEnt, 3)
 writeDataToFile("question_hellinger.txt", distances, 1)
@@ -148,4 +150,3 @@ distributionBarGraph(questionDistributions, keys)
 hellingerBarGraph(distances)
 print("%s: %s" % (distanceMaxKey, round(distances.get(distanceMaxKey), 3)))
 print("%s: %s" % (distanceMinKey, round(distances.get(distanceMinKey), 3)))
-
