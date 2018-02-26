@@ -54,8 +54,8 @@ def calculateHellinger(distributions, questionTitle):
         for qB in range(qA + 1, 26):
             probOfA = distributions.get(questionTitle[qA])
             probOfB = distributions.get(questionTitle[qB])
-            temp = np.sqrt(sum(np.square(np.subtract(np.sqrt(probOfA), np.sqrt(probOfB)))))
-            hellin = np.multiply(np.sqrt(temp), divSqRtTwo)
+            temp = math.sqrt(sum(np.square(np.subtract(np.sqrt(probOfA), np.sqrt(probOfB)))))
+            hellin = temp * divSqRtTwo
 
             # format key and create dictionary
             hellinKey = "%d, %d" % (qA + 1, qB + 1)
@@ -121,6 +121,7 @@ def writeDataToFile(filename, data, dictValueNum):
 # Main
 answer = list(range(1, 6))
 
+# loop that creates dictionaries to hold the contents of the distributions, mean, variance, and entropy
 for i in range(26):
     colLetter = chr(65 + i)
     questionName = "Q%d" % (i + 1)
@@ -131,11 +132,15 @@ for i in range(26):
     questionMeanVarEnt.update({questionName:[questionMean, questionVar, questionEnt]})          
     questionDistributions.update({questionName:questionProb})           
 
+# calculates the hellinger distance for all possible values
 keys = [key for key, values in questionDistributions.items()]
+
+
 distances = calculateHellinger(questionDistributions, keys)
 distanceMaxKey = max(distances, key=distances.get)
 distanceMinKey = min(distances, key=distances.get)
 
+# writes all the data to file for easy reading, also creates the two graphs and prints the min and max hellinger pairs.
 writeDataToFile("question_distributions.txt", questionDistributions, 5)
 writeDataToFile("question_mean_var_ent.txt", questionMeanVarEnt, 3)
 writeDataToFile("question_hellinger.txt", distances, 1)
@@ -143,3 +148,4 @@ distributionBarGraph(questionDistributions, keys)
 hellingerBarGraph(distances)
 print("%s: %s" % (distanceMaxKey, round(distances.get(distanceMaxKey), 3)))
 print("%s: %s" % (distanceMinKey, round(distances.get(distanceMinKey), 3)))
+
