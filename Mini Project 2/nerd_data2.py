@@ -84,7 +84,7 @@ def drawBarGraph(maleDist, femaleDist, questionTitle):
     fig.tight_layout()
     plt.show()
 
-# Writes data to file, intended to be used for the Hellinger Distances
+# Writes data to file, intended to be used for the Hellinger Distances and Z-Scores
 def writeDataToFile(filename, data):
     f = open(filename, "w")
     for key, value in data.items():
@@ -111,7 +111,7 @@ for i in range(26):
     femaleProb, maleProb, femaleSampleSize, maleSampleSize = extractDistributions(i)
     hellinDist = calculateHellbringerDistances(maleProb, femaleProb)
     zScore = calculateZTest(response, femaleProb, maleProb, femaleSampleSize, maleSampleSize)
-    drawBarGraph(femaleProb, maleProb, questionName)
+    #drawBarGraph(femaleProb, maleProb, questionName)
 
     # Data for gender Hellinger distances and Z-Scores
     hellingerDistances.update({questionName:hellinDist})
@@ -131,7 +131,8 @@ for key, value in genderZScores.items():
     else:
         significanceLevel01.get('accept').append(key)
 
-writeDataToFile("gender_hellinger.txt", hellingerDistances)
+#writeDataToFile("gender_hellinger.txt", hellingerDistances)
+writeDataToFile("z_scores.txt", genderZScores)
 writeDataToFile("01_z_scores.txt", significanceLevel01)
 writeDataToFile("05_z_scores.txt", significanceLevel05)
-print("The question with the maximum Hellinger Distance is %s, and the question with the minimum is %s." % (maxHellinDistKey, minHellinDistKey))
+#print("The question with the maximum Hellinger Distance is %s, and the question with the minimum is %s." % (maxHellinDistKey, minHellinDistKey))
