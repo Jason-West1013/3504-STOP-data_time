@@ -3,13 +3,16 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+# global variables for data
 femaleQuestionDistributions = {}
 maleQuestionDistributions = {}
 hellingerDistances = {}
 genderZScores = {}
 
-# Computes the distributions of male and female responses for the 26 questions
-# changed for .csv files
+''' Opens the .csv data file and parses the content extracting all the responses
+    for each question. Separates this data by gender calculates the distribution 
+    and returns the computation per gender and sample size. 
+    Uses the csv library to parse the data file. '''
 def extractDistributions(column):
     csvFile = open("mini-project2-data-v3.csv", "r")
     reader = csv.reader(csvFile)
@@ -41,7 +44,7 @@ def extractDistributions(column):
 
     return femaleDistributions, maleDistributions, femaleSampleSize, maleSampleSize
 
-# Calculates the Mean and Variance and then the Z-Score for the male and female distributions
+''' Calculates and returns the Z-Scores for the data distribution. '''
 def calculateZTest(responseNum, femaleDist, maleDist, femaleSampleSize, maleSampleSize):
     femaleEx = sum(np.multiply(responseNum, femaleDist))
     maleEx = sum(np.multiply(responseNum, maleDist))
@@ -53,10 +56,10 @@ def calculateZTest(responseNum, femaleDist, maleDist, femaleSampleSize, maleSamp
     maleVar = maleDoubleEx - maleEx**2
 
     dividend = maleEx - femaleEx
-    divisor = math.sqrt((maleVar / maleSampleSize) + (femaleVar / femaleSampleSize))
+    divisor = math.sqrt(((maleVar**2) / maleSampleSize) + ((femaleVar**2) / femaleSampleSize))
     return dividend / divisor
 
-# Calculates the Hellinger Distances between the male and female distributions 
+''' Calculates and returns the Hellinger Distances for each distribution by gender. '''
 def calculateHellbringerDistances(maleDist, femaleDist):
     divSqRtTwo = 1 / math.sqrt(2)
 
@@ -64,7 +67,9 @@ def calculateHellbringerDistances(maleDist, femaleDist):
     hellin = tmp * divSqRtTwo
     return hellin
 
-# Draws a bar graph for a question showing the male and female distributions 
+''' Draws a bar graph for a question to show the difference in distributions over 
+    the given responses by gender.
+    Uses the matpyplot library to draw the bar graphs. '''
 def drawBarGraph(maleDist, femaleDist, questionTitle):
     nGroups = 5
     fig, p = plt.subplots()
@@ -84,7 +89,7 @@ def drawBarGraph(maleDist, femaleDist, questionTitle):
     fig.tight_layout()
     plt.show()
 
-# Writes data to file, intended to be used for the Hellinger Distances and Z-Scores
+''' Writes given data to a specified file. '''
 def writeDataToFile(filename, data):
     f = open(filename, "w")
     for key, value in data.items():
@@ -96,13 +101,14 @@ def writeDataToFile(filename, data):
                 f.write("%s\n" % i)
             f.write("\n")
 
-# Main
+''' Main '''
 response = list(range(1, 6))
 significanceLevel05 = {'accept':[], 'reject':[]}
 significanceLevel01 = {'accept':[], 'reject':[]}
 
 
-# Main loop for the 26 questions
+# Main loop that calculates the data and draws the bar graphs for each question in the given nerd data.
+# Puts all calculated data into dictionaries. 
 for i in range(26):
     colLetter = chr(65 + i)            
     questionName = "Q%d" % (i + 1)
@@ -111,7 +117,7 @@ for i in range(26):
     femaleProb, maleProb, femaleSampleSize, maleSampleSize = extractDistributions(i)
     hellinDist = calculateHellbringerDistances(maleProb, femaleProb)
     zScore = calculateZTest(response, femaleProb, maleProb, femaleSampleSize, maleSampleSize)
-    #drawBarGraph(femaleProb, maleProb, questionName)
+    drawBarGraph(femaleProb, maleProb, questionName)
 
     # Data for gender Hellinger distances and Z-Scores
     hellingerDistances.update({questionName:hellinDist})
@@ -120,6 +126,7 @@ for i in range(26):
 minHellinDistKey = min(hellingerDistances, key=hellingerDistances.get)
 maxHellinDistKey = max(hellingerDistances, key=hellingerDistances.get)
 
+# Determines which Z-Scores will be accepted or rejected given the alpha number hardcoded in.
 for key, value in genderZScores.items():
     score = float(value)
     if score < -1.96 or score > 1.96:
@@ -131,8 +138,9 @@ for key, value in genderZScores.items():
     else:
         significanceLevel01.get('accept').append(key)
 
-#writeDataToFile("gender_hellinger.txt", hellingerDistances)
+# Writes all the data to files for easy analysis.
+writeDataToFile("gender_hellinger.txt", hellingerDistances)
 writeDataToFile("z_scores.txt", genderZScores)
 writeDataToFile("01_z_scores.txt", significanceLevel01)
 writeDataToFile("05_z_scores.txt", significanceLevel05)
-#print("The question with the maximum Hellinger Distance is %s, and the question with the minimum is %s." % (maxHellinDistKey, minHellinDistKey))
+print("The question with the maximum Hellinger Distance is %s, and the question with the minimum is %s." % (maxHellinDistKey, minHellinDistKey))
